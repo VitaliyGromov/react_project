@@ -4,6 +4,7 @@ import PostList from "./components/PostList";
 import PostForm from "./components/PostForm";
 import PostFilter from "./components/PostFilter";
 import MyModal from "./components/ui/modal/MyModal";
+import MyButton from "./components/ui/button/MyButton";
 
 function App() {
     const [posts, setPosts] = useState([
@@ -13,9 +14,9 @@ function App() {
     ]);
 
     const [filter, setFilter] = useState({sortType: '', query: ''});
+    const [modal, setModal] = useState(false);
 
     const sortedPosts = useMemo(() => {
-        console.log('Функция отработала');
         if(filter.sortType){
             return [...posts].sort((a, b) => a[filter.sortType].localeCompare(b[filter.sortType]));
         }
@@ -27,7 +28,8 @@ function App() {
     }, [filter.query, sortedPosts]);
 
     function createPost(newPost) {
-        setPosts([...posts, newPost])
+        setPosts([...posts, newPost]);
+        setModal(false);
     }
 
     function removePosts(post) {
@@ -36,11 +38,12 @@ function App() {
 
     return (
         <div className="App">
-            <MyModal>
+            <MyModal
+                visible={modal}
+                setVisible={setModal}
+            >
                 <PostForm create={createPost}/>
             </MyModal>
-
-            <hr style={{margin: 20}}/>
             <PostFilter
                 filter={filter}
                 setFilter={setFilter}
@@ -52,6 +55,9 @@ function App() {
                     Посты не найдены!
                 </h1>
             }
+            <MyButton style={{marginTop: "15px"}} onClick={() => setModal(true)}>
+                Создать новый пост
+            </MyButton>
         </div>
     );
 }
