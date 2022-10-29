@@ -1,31 +1,29 @@
-import React, {useMemo, useState} from "react";
+import React, {useEffect, useState} from "react";
 import './styles/App.css';
 import PostList from "./components/PostList";
 import PostForm from "./components/PostForm";
 import PostFilter from "./components/PostFilter";
 import MyModal from "./components/ui/modal/MyModal";
 import MyButton from "./components/ui/button/MyButton";
+import {usePosts} from "./hooks/usePost";
+import PostService from "./API/PostService";
+import Loader from "./components/ui/loader/Loader";
+import {useFetching} from "./hooks/useFetching";
 
 function App() {
-    const [posts, setPosts] = useState([
-        {id: 1, title: 'Metallica', body: 'One of the greatest metal band ever'},
-        {id: 2, title: 'Megadeath', body: "Metallica's enemy"},
-        {id: 3, title: 'Сплин', body: 'Одна из самых крутых групп российского рока'}
-    ]);
-
+    const [posts, setPosts] = useState([]);
     const [filter, setFilter] = useState({sortType: '', query: ''});
     const [modal, setModal] = useState(false);
+    const [fetchPosts, isPostsLoading, postError] = useFetching(async () => {
+        const posts = await PostService.getAll();
+        setPosts(posts);
+    });
 
-    const sortedPosts = useMemo(() => {
-        if(filter.sortType){
-            return [...posts].sort((a, b) => a[filter.sortType].localeCompare(b[filter.sortType]));
-        }
-        return posts;
-    }, [filter.sortType, posts]);
+    const sortedAndSelectedPosts = usePosts(posts, filter.sortType, filter.query);
 
-    const sortedAndSelectedPosts = useMemo(() => {
-        return sortedPosts.filter(post => post.title.toLowerCase().includes(filter.query));
-    }, [filter.query, sortedPosts]);
+    useEffect(() => {
+        fetchPosts();
+    }, []);
 
     function createPost(newPost) {
         setPosts([...posts, newPost]);
@@ -48,13 +46,20 @@ function App() {
                 filter={filter}
                 setFilter={setFilter}
             />
-            {sortedAndSelectedPosts.length
+            {postError &&
+                <h1>Произошла ошибка ${postError}</h1>
+            }
+            {isPostsLoading
+                ? <div style={{display: 'flex', justifyContent: 'center', marginTop: '50px'}}><Loader/></div>
+                : <PostList remove={removePosts} posts={sortedAndSelectedPosts} title='Список различных групп'/>
+            }
+            {/*{sortedAndSelectedPosts.length
                 ?
                 <PostList remove={removePosts} posts={sortedAndSelectedPosts} title='Список различных групп'/>
                 : <h1 style={{textAlign: "center"}}>
                     Посты не найдены!
                 </h1>
-            }
+            }*/}
             <MyButton style={{marginTop: "15px"}} onClick={() => setModal(true)}>
                 Создать новый пост
             </MyButton>
