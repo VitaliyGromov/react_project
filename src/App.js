@@ -1,8 +1,8 @@
 import React from "react";
 import './styles/App.css';
 import {BrowserRouter} from "react-router-dom";
-import Navbar from "./components/ui/navbar/Navbar";
 import AppRouter from "./components/AppRouter";
+import Navbar from "./components/ui/navbar/Navbar";
 
 function App() {
     return (
@@ -12,5 +12,4 @@ function App() {
         </BrowserRouter>
     )
 }
-
 export default App;

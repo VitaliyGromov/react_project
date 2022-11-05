@@ -1,26 +1,20 @@
 import React from 'react';
-import {Route, Routes, redirect} from "react-router-dom";
-import {privateRoutes, publicRoutes} from "../router";
-import LoginPage from "./LoginPage";
+import {Route, Routes} from "react-router-dom";
+import About from "../pages/About";
+import Posts from "../pages/Posts";
+import PostPage from "./PostPage";
+import Dashboard from "../pages/Dashboard";
+import Error from "../pages/Error";
 
 const AppRouter = () => {
-    const isAuth = false;
     return (
-        isAuth
-            ?
-            <Routes>
-                {privateRoutes.map(route =>
-                    <Route path={route.path} element={route.element} exact={route.exact}>
-                    </Route>
-                )}
-            </Routes>
-            :
-            <Routes>
-                {publicRoutes.map(route =>
-                    <Route path={route.path} element={route.element} exact={route.exact}>
-                    </Route>
-                )}
-            </Routes>
+        <Routes>
+            <Route path='/' element={<Dashboard/>}/>
+            <Route path='/about' element={<About/>}/>
+            <Route path='/posts' element={<Posts/>}/>
+            <Route path='/posts/:id' element={<PostPage/>}/>
+            <Route path='*' element={<Error/>}/>
+        </Routes>
     );
 };
 
